@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
@@ -10,19 +9,19 @@ import (
 )
 
 func main() {
-	printHdr := flag.Bool("h", false, "print the column header")
-	flag.Parse()
+	//printHdr := flag.Bool("h", false, "print the column header")
+	//flag.Parse()
 
 	if len(os.Args) < 2 {
 		fmt.Print("usage: audioinfo <audiofile>\n")
 		os.Exit(1)
 	}
-	args := os.Args[flag.NArg():]
+	args := os.Args //[flag.NArg():]
 
-	if *printHdr {
-		fmt.Printf("%10s | %10s | %10s | %10s | %10s | %10s | %10s | %s\n",
-			"AvgBps", "Bits", "NumChans", "SBits", "SampleRate", "WavFormat", "Valid", "Filename")
-	}
+	//if *printHdr {
+	fmt.Printf("%10s | %10s | %10s | %10s | %10s | %10s | %10s | %s\n",
+		"AvgBps", "Bits", "NumChans", "SBits", "SampleRate", "WavFormat", "Valid", "Filename")
+	//}
 
 	for i := 1; i < len(args); i++ {
 		fileName := args[i]
