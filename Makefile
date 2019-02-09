@@ -10,6 +10,11 @@ build:
 run:
 	#./main /**/*.wav
 	#./audioinfo /Volumes/SANDISK-64G/RAAF\ Pt\ Cook/SOUNDS/**/*.wav
-	#find / -name *.wav* -exec ./main -h {} \;
+	find / -name [aA-zZ]*.wav -exec ./main -h {} \;
+
+runJSON:
+	#find $(HOME) -name *.wav -exec ./main -ofmt=json {} \;
+	find $(HOME) -name [aA-zZ]*.wav -exec ./main {} \;
+
 
 
