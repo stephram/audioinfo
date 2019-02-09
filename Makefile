@@ -45,6 +45,8 @@ install:
 	go get -u github.com/go-audio/wav
 	go get -u github.com/sirupsen/logrus
 	go get -u github.com/oklog/ulid
+	# Install gometalinter
+	curl -L https://git.io/vp6lP | sh
 
 clean:
 	rm -rf $(BUILD_FOLDER)

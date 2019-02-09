@@ -55,7 +55,7 @@ func main() {
 		if err != nil {
 			log.WithError(err).Fatalf("failed to open file: %s", fileName)
 		}
-		defer f.Close()
+		defer f.Close() // nolint: errcheck
 
 		d := wav.NewDecoder(f)
 		d.ReadMetadata()
