@@ -1,7 +1,8 @@
 #!/usr/bin/make -f
 
 SHELL = /bin/bash
-.SHELLFLAGS = -ecx
+#.SHELLFLAGS = -ecx
+.SHELLFLAGS = -ec
 
 GO ?= go
 
@@ -13,6 +14,8 @@ TARGET := $(shell echo $${PWD\#\#*/})
 
 # go source files, ignore vendor directory
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
+
+HOME = $(shell echo $${HOME})
 
 BUILD_FOLDER = $(shell echo `pwd`/build)
 
@@ -41,6 +44,7 @@ info:
 install:
 	go get -u github.com/go-audio/wav
 	go get -u github.com/sirupsen/logrus
+	go get -u github.com/oklog/ulid
 
 clean:
 	rm -rf $(BUILD_FOLDER)
