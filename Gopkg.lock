@@ -3,25 +3,69 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:42b801064f0aeb1b9bad0e1b42edf27bc34485bec63b965b9b840e07e6074608"
   name = "github.com/go-audio/audio"
   packages = ["."]
-  revision = "b697a35b5608fcf1c4f90a9d4f33d76bd70e8fe6"
+  pruneopts = "UT"
+  revision = "7b2a6ca214808c64326280ac13268af853543f0b"
 
 [[projects]]
   branch = "master"
+  digest = "1:d8265bd12a9b80cff23bb0b225318230765a7220500a006392c53a6dc05b1367"
   name = "github.com/go-audio/wav"
   packages = ["."]
-  revision = "eec8ba650d18bc946444c13b92fc3ef9ed52fc69"
+  pruneopts = "UT"
+  revision = "de841e69b8842aa73e98054d37feb48425f133b8"
+
+[[projects]]
+  digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
 
 [[projects]]
   branch = "master"
+  digest = "1:8c2ec3f7fa853d374b340831554f225ead9ab4cc6932256f0cffbfef8c78d9f5"
   name = "github.com/mattetti/audio"
   packages = ["riff"]
-  revision = "b7bc1ebaf222d206df57afe66d58ed2249a8061d"
+  pruneopts = "UT"
+  revision = "01576cde1f212c296c0b8ef5fa857169770c75b6"
+
+[[projects]]
+  digest = "1:87c2e02fb01c27060ccc5ba7c5a407cc91147726f8f40b70cceeedbc52b1f3a8"
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
+  version = "v1.3.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:fde12c4da6237363bf36b81b59aa36a43d28061167ec4acb0d41fc49464e28b9"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  pruneopts = "UT"
+  revision = "193df9c0f06f8bb35fba505183eaf0acc0136505"
+
+[[projects]]
+  branch = "master"
+  digest = "1:a1914323eabb0da3b4392fb0d34b1ae5b6b531323daf4eeddc355d8000982052"
+  name = "golang.org/x/sys"
+  packages = [
+    "unix",
+    "windows",
+  ]
+  pruneopts = "UT"
+  revision = "41f3e6584952bb034a481797859f6ab34b6803bd"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "37e9944b24f22f54980c8b45f02dc0dc540110fe3edb15430b8f7d7e9f2c6ff9"
+  input-imports = [
+    "github.com/go-audio/wav",
+    "github.com/sirupsen/logrus",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -38,7 +38,7 @@ func main() {
 		fmt.Print("usage: audioinfo <audiofile>\n")
 		os.Exit(1)
 	}
-	args := os.Args[flag.NArg():]
+	args := os.Args[flag.NFlag()+1:]
 
 	if *printHdr && strings.EqualFold(*outFmt, TextFormat) {
 		displayHeader()
@@ -57,25 +57,30 @@ func main() {
 		d.ReadMetadata()
 		if d.Err() != nil {
 			log.WithError(d.Err()).Fatalf("failed to read metadata from file: %s", fileName)
+			continue
 		}
-		fileMetadata := FileMetadata{
-			Name:        fileName,
-			Channels:    d.NumChans,
-			Bits:        d.BitDepth,
-			SBits:       d.SampleBitDepth(),
-			BytesPerSec: d.AvgBytesPerSec,
-			Rate:        d.SampleRate,
-			Format:      d.WavAudioFormat,
-			Valid:       d.IsValidFile(),
-		}
-		switch *outFmt {
-		case TextFormat:
-			displayText(fileMetadata)
-		case JSONFormat:
-			displayJSON(fileMetadata)
-		}
+		outputMetadata(fileName, d, *outFmt)
 	}
 	os.Exit(0)
+}
+
+func outputMetadata(fileName string, d *wav.Decoder, outFmt string) {
+	fileMetadata := FileMetadata{
+		Name:        fileName,
+		Channels:    d.NumChans,
+		Bits:        d.BitDepth,
+		SBits:       d.SampleBitDepth(),
+		BytesPerSec: d.AvgBytesPerSec,
+		Rate:        d.SampleRate,
+		Format:      d.WavAudioFormat,
+		Valid:       d.IsValidFile(),
+	}
+	switch outFmt {
+	case TextFormat:
+		displayText(fileMetadata)
+	case JSONFormat:
+		displayJSON(fileMetadata)
+	}
 }
 
 func displayHeader() {
