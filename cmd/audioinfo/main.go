@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/stephram/audioinfo/internal/utils/ulid"
+
 	"github.com/go-audio/wav"
 	log "github.com/sirupsen/logrus"
 )
@@ -19,6 +21,7 @@ const (
 
 // FileMetadata ...
 type FileMetadata struct {
+	ID          string
 	Name        string
 	Channels    uint16
 	Bits        uint16
@@ -35,9 +38,10 @@ func main() {
 	flag.Parse()
 
 	if len(os.Args) < 2 {
-		fmt.Print("usage: audioinfo <audiofile>\n")
+		fmt.Print("usage: audioinfo [options] <audiofile>\n")
 		os.Exit(1)
 	}
+	// Get the args after the flags.
 	args := os.Args[flag.NFlag()+1:]
 
 	if *printHdr && strings.EqualFold(*outFmt, TextFormat) {
@@ -66,6 +70,7 @@ func main() {
 
 func outputMetadata(fileName string, d *wav.Decoder, outFmt string) {
 	fileMetadata := FileMetadata{
+		ID:          ulid.New(),
 		Name:        fileName,
 		Channels:    d.NumChans,
 		Bits:        d.BitDepth,
