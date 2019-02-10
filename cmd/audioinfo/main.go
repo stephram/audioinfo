@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/stephram/audioinfo/pkg/app"
+
 	"github.com/stephram/audioinfo/internal/utils/ulid"
 
 	"github.com/go-audio/wav"
@@ -33,11 +35,12 @@ type FileMetadata struct {
 }
 
 func main() {
-	printHdr := flag.Bool("h", false, "print the column header")
+	printHdr := flag.Bool("hdr", false, "print the column header")
 	outFmt := flag.String("ofmt", "json", "output format 'text' or 'json'. Default 'json'")
 	flag.Parse()
 
 	if len(os.Args) < 2 {
+		fmt.Println(app.New())
 		fmt.Print("usage: audioinfo [options] <audiofile>\n")
 		os.Exit(1)
 	}
