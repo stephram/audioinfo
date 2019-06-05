@@ -35,8 +35,9 @@ type FileMetadata struct {
 }
 
 func main() {
-	printHdr := flag.Bool("hdr", false, "print the column header")
-	outFmt := flag.String("ofmt", "json", "output format 'text' or 'json'. Default 'json'")
+	prtHdr := flag.Bool("hdr", false, "print the column header")
+	outFmt := flag.String("fmt", "json", "output format 'text' or 'json'. Default 'json'")
+
 	flag.Parse()
 
 	if len(os.Args) < 2 {
@@ -47,7 +48,7 @@ func main() {
 	// Get the args after the flags.
 	args := os.Args[flag.NFlag()+1:]
 
-	if *printHdr && strings.EqualFold(*outFmt, TextFormat) {
+	if *prtHdr && strings.EqualFold(*outFmt, TextFormat) {
 		displayHeader()
 	}
 
@@ -62,6 +63,7 @@ func main() {
 
 		d := wav.NewDecoder(f)
 		d.ReadMetadata()
+
 		if d.Err() != nil {
 			log.WithError(d.Err()).Fatalf("failed to read metadata from file: %s", fileName)
 			continue

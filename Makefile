@@ -59,14 +59,16 @@ install:
 	go get -u github.com/go-audio/wav
 	go get -u github.com/sirupsen/logrus
 	go get -u github.com/oklog/ulid
-	# Install gometalinter
-	curl -L https://git.io/vp6lP | sh
+
+	# Install golangci-lint
+	# binary will be $(go env GOPATH)/bin/golangci-lint
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.16.0
 
 clean:
 	rm -rf $(BUILD_FOLDER)
 
 lint:
-	gometalinter --vendor --deadline=2m ./cmd/... ./internal/...
+	golangci-lint run ./cmd/... ./internal/...
 
 $(TARGET) : $(SRC)
 	CGO_ENABLED=0 GOARCH=amd64 \
