@@ -4,11 +4,16 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"strings"
 
+	_ "net/http/pprof"
+
 	"github.com/stephram/audioinfo/pkg/app"
 
+	"github.com/stephram/audioinfo/internal/utils"
 	"github.com/stephram/audioinfo/internal/utils/ulid"
 
 	"github.com/go-audio/wav"
@@ -34,9 +39,20 @@ type FileMetadata struct {
 	Valid       bool
 }
 
+var (
+	prtHdr *bool
+	outFmt *string
+)
+
+func init() {
+	utils.GetLogger().Infof("initialised logger")
+}
+
 func main() {
-	prtHdr := flag.Bool("hdr", false, "print the column header")
-	outFmt := flag.String("fmt", "json", "output format 'text' or 'json'. Default 'json'")
+	prtHdr = flag.Bool("hdr", false, "print the column header")
+	outFmt = flag.String("fmt", "json", "output format 'text' or 'json'. Default 'json'")
+
+	recurse := flag.Bool("r", false, "recurse into directories")
 
 	flag.Parse()
 
@@ -52,25 +68,75 @@ func main() {
 		displayHeader()
 	}
 
-	for i := 0; i < len(args); i++ {
-		fileName := args[i]
+	go func() {
+		http.ListenAndServe("localhost:8080", nil)
+	}()
 
-		f, err := os.Open(fileName) // nolint: gosec
-		if err != nil {
-			log.WithError(err).Fatalf("failed to open file: %s", fileName)
-		}
-		defer f.Close() // nolint: errcheck
+	processFiles(args, *recurse)
 
-		d := wav.NewDecoder(f)
-		d.ReadMetadata()
+	os.Exit(0)
+}
 
-		if d.Err() != nil {
-			log.WithError(d.Err()).Fatalf("failed to read metadata from file: %s", fileName)
+func processFiles(fileNames []string, recurse bool) {
+	for i := 0; i < len(fileNames); i++ {
+		fileName := fileNames[i]
+
+		if isDirectory(fileName) {
+			if recurse {
+				//log.Infof("recurse into directory: %s", fileName)
+
+				filesInfo, infoErr := ioutil.ReadDir(fileName)
+				if infoErr != nil {
+					log.WithError(infoErr).Errorf("failed to read directory: %s", fileName)
+				}
+				processFiles(extractFilenames(filesInfo, fileName, recurse), recurse)
+			}
 			continue
 		}
-		outputMetadata(fileName, d, *outFmt)
+
+		processWaveFile(fileName)
 	}
-	os.Exit(0)
+}
+
+func extractFilenames(filesInfo []os.FileInfo, filesPath string, recurse bool) []string {
+	var fileNames []string
+
+	for i := 0; i < len(filesInfo); i++ {
+		fileNames = append(fileNames, fmt.Sprintf("%s/%s", filesPath, filesInfo[i].Name()))
+	}
+
+	return fileNames
+}
+
+func isDirectory(fileName string) bool {
+	fi, fiErr := os.Stat(fileName)
+	if fiErr != nil {
+		log.WithError(fiErr).Errorf("failed to stat filename: %s", fileName)
+		return false
+	}
+	return fi.Mode().IsDir()
+}
+
+func processWaveFile(fileName string) {
+	if !strings.HasSuffix(strings.ToLower(fileName), "wav") {
+		//log.Errorf("incorrect file suffix: %s", fileName)
+		return
+	}
+
+	f, err := os.Open(fileName) // nolint: gosec
+	if err != nil {
+		log.WithError(err).Fatalf("failed to open file: %s", fileName)
+	}
+	defer f.Close() // nolint: errcheck
+
+	d := wav.NewDecoder(f)
+	d.ReadMetadata()
+
+	if d.Err() != nil {
+		log.WithError(d.Err()).Fatalf("failed to read metadata from file: %s", fileName)
+		return
+	}
+	outputMetadata(fileName, d, *outFmt)
 }
 
 func outputMetadata(fileName string, d *wav.Decoder, outFmt string) {

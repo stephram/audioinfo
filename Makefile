@@ -62,7 +62,8 @@ install:
 
 	# Install golangci-lint
 	# binary will be $(go env GOPATH)/bin/golangci-lint
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.16.0
+	#curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.16.0
+	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
 clean:
 	rm -rf $(BUILD_FOLDER)
