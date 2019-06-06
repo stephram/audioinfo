@@ -83,26 +83,38 @@ func processFiles(fileNames []string, recurse bool) {
 
 		if isDirectory(fileName) {
 			if recurse {
-				//log.Infof("recurse into directory: %s", fileName)
-
 				filesInfo, infoErr := ioutil.ReadDir(fileName)
 				if infoErr != nil {
 					log.WithError(infoErr).Errorf("failed to read directory: %s", fileName)
 				}
-				processFiles(extractFilenames(filesInfo, fileName, recurse), recurse)
+				processFiles(readFilenames(filesInfo, fileName, recurse), recurse)
 			}
 			continue
 		}
 
-		processWaveFile(fileName)
+		if isValidWaveFilename(fileName) {
+			processWaveFile(fileName)
+		}
 	}
 }
 
-func extractFilenames(filesInfo []os.FileInfo, filesPath string, recurse bool) []string {
+func isValidWaveFilename(fileName string) bool {
+	if strings.HasPrefix(fileName, ".") {
+		return false
+	}
+
+	if !strings.HasSuffix(strings.ToLower(fileName), "wav") {
+		return false
+	}
+	return true
+}
+
+func readFilenames(filesInfo []os.FileInfo, filesPath string, recurse bool) []string {
 	var fileNames []string
 
 	for i := 0; i < len(filesInfo); i++ {
-		fileNames = append(fileNames, fmt.Sprintf("%s/%s", filesPath, filesInfo[i].Name()))
+		fileName := filesInfo[i].Name()
+		fileNames = append(fileNames, fmt.Sprintf("%s/%s", filesPath, fileName))
 	}
 
 	return fileNames
@@ -118,11 +130,6 @@ func isDirectory(fileName string) bool {
 }
 
 func processWaveFile(fileName string) {
-	if !strings.HasSuffix(strings.ToLower(fileName), "wav") {
-		//log.Errorf("incorrect file suffix: %s", fileName)
-		return
-	}
-
 	f, err := os.Open(fileName) // nolint: gosec
 	if err != nil {
 		log.WithError(err).Fatalf("failed to open file: %s", fileName)
