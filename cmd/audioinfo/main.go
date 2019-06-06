@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	_ "net/http/pprof"
@@ -49,7 +50,7 @@ func init() {
 }
 
 func main() {
-	prtHdr = flag.Bool("hdr", false, "print the column header")
+	prtHdr = flag.Bool("hdr", false, "print the column header. Only useful when fmt=text")
 	outFmt = flag.String("fmt", "json", "output format 'text' or 'json'. Default 'json'")
 
 	recurse := flag.Bool("r", false, "recurse into directories")
@@ -69,7 +70,7 @@ func main() {
 	}
 
 	go func() {
-		http.ListenAndServe("localhost:8080", nil)
+		_ = http.ListenAndServe("localhost:8080", nil)
 	}()
 
 	processFiles(args, *recurse)
@@ -114,7 +115,7 @@ func readFilenames(filesInfo []os.FileInfo, filesPath string, recurse bool) []st
 
 	for i := 0; i < len(filesInfo); i++ {
 		fileName := filesInfo[i].Name()
-		fileNames = append(fileNames, fmt.Sprintf("%s/%s", filesPath, fileName))
+		fileNames = append(fileNames, fmt.Sprintf("%s%c%s", filesPath, filepath.Separator, fileName))
 	}
 
 	return fileNames
