@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	_ "net/http/pprof"
 
@@ -31,6 +32,8 @@ const (
 type FileMetadata struct {
 	ID          string
 	Name        string
+	Path        string
+	AbsName     string
 	Channels    uint16
 	Bits        uint16
 	SBits       int32
@@ -38,11 +41,17 @@ type FileMetadata struct {
 	Rate        uint32
 	Format      uint16
 	Valid       bool
+	Duration    time.Duration
+	Description string
+	Metadata    wav.Metadata
 }
 
 var (
-	prtHdr *bool
-	outFmt *string
+	prtHdr    *bool
+	outFmt    *string
+	jsArr     *bool
+	enProf    *bool
+	fileCount int
 )
 
 func init() {
@@ -52,10 +61,14 @@ func init() {
 func main() {
 	prtHdr = flag.Bool("hdr", false, "print the column header. Only useful when fmt=text")
 	outFmt = flag.String("fmt", "json", "output format 'text' or 'json'. Default 'json'")
+	jsArr = flag.Bool("arr", false, "output as JSON array")
+	enProf = flag.Bool("prof", true, "enable the pprof package. Listening on port 8080")
 
 	recurse := flag.Bool("r", false, "recurse into directories")
 
 	flag.Parse()
+
+	fileCount = 0
 
 	if len(os.Args) < 2 {
 		fmt.Println(app.New())
@@ -69,11 +82,21 @@ func main() {
 		displayHeader()
 	}
 
-	go func() {
-		_ = http.ListenAndServe("localhost:8080", nil)
-	}()
+	if *enProf {
+		go func() {
+			_ = http.ListenAndServe("localhost:8080", nil)
+		}()
+	}
+
+	if *jsArr {
+		fmt.Println("[")
+	}
 
 	processFiles(args, *recurse)
+
+	if *jsArr {
+		fmt.Println("]")
+	}
 
 	os.Exit(0)
 }
@@ -100,6 +123,11 @@ func processFiles(fileNames []string, recurse bool) {
 }
 
 func isValidWaveFilename(fileName string) bool {
+
+	if filepath.IsAbs(fileName) {
+		_, fileName = filepath.Split(fileName)
+	}
+
 	if strings.HasPrefix(fileName, ".") {
 		return false
 	}
@@ -144,13 +172,27 @@ func processWaveFile(fileName string) {
 		log.WithError(d.Err()).Fatalf("failed to read metadata from file: %s", fileName)
 		return
 	}
+
 	outputMetadata(fileName, d, *outFmt)
+	fileCount++
 }
 
 func outputMetadata(fileName string, d *wav.Decoder, outFmt string) {
+
+	fileDuration, _ := d.Duration()
+
+	var metadata wav.Metadata
+	if d.Metadata != nil {
+		metadata = *d.Metadata
+	}
+
+	path, file := filepath.Split(fileName)
+
 	fileMetadata := FileMetadata{
 		ID:          ulid.New(),
-		Name:        fileName,
+		Name:        file,
+		Path:        path,
+		AbsName:     fmt.Sprintf("%s%c%s", path, filepath.Separator, file),
 		Channels:    d.NumChans,
 		Bits:        d.BitDepth,
 		SBits:       d.SampleBitDepth(),
@@ -158,6 +200,9 @@ func outputMetadata(fileName string, d *wav.Decoder, outFmt string) {
 		Rate:        d.SampleRate,
 		Format:      d.WavAudioFormat,
 		Valid:       d.IsValidFile(),
+		Duration:    fileDuration,
+		Description: d.String(),
+		Metadata:    metadata,
 	}
 	switch outFmt {
 	case TextFormat:
@@ -178,7 +223,15 @@ func displayJSON(fileMetadata FileMetadata) {
 		log.WithError(jsonErr).Errorf("failed to marshal JSON for %+v", fileMetadata)
 		return
 	}
+	if *jsArr {
+		if fileCount > 0 {
+			fmt.Print(",")
+		}
+		fmt.Println(string(jsonArr))
+		return
+	}
 	fmt.Println(string(jsonArr))
+
 }
 
 func displayText(fmd FileMetadata) {
