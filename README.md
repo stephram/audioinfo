@@ -1,3 +1,4 @@
+![Go](https://github.com/stephram/audioinfo/workflows/Go/badge.svg)
 # audioinfo
 
 See `Makefile` for details.
