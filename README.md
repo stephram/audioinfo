@@ -1,4 +1,5 @@
 ![Go](https://github.com/stephram/audioinfo/workflows/Go/badge.svg)
+
 # audioinfo
 Read header information from WAV files and output as JSON or TEXT.
 
@@ -18,12 +19,12 @@ Usage of build/audioinfo:
 ```
 
 ### Running
-Ouptut as JSON
+Output as JSON
 ```text
 audioinfo ~/Dropbox/Audio/Soundscape/*
 ```
 Example output:
-```json
+```json5
 {
   "ID": "01EC95591XQH9G0Q01E2R4CYGE",
   "Name": "ChannelCount-1-32-discrete.wav",
