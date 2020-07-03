@@ -1,8 +1,7 @@
-#!/usr/bin/make -f
+SHELL:=/bin/bash
 
-SHELL = /bin/bash
 #.SHELLFLAGS = -ecx
-.SHELLFLAGS = -ec
+#.SHELLFLAGS = -ec
 
 GO ?= go
 
@@ -13,7 +12,8 @@ APP_NAME = audioinfo
 PRODUCT = audioinfo
 
 # The name of the executable (default is current directory name)
-TARGET := $(shell echo $${PWD\#\#*/})
+#TARGET := $(shell echo $${PWD\#\#*/})
+TARGET := $(shell echo $${PWD})/$(APP_NAME)
 
 # go source files, ignore vendor directory
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
