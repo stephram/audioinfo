@@ -79,6 +79,12 @@ $(TARGET) : $(SRC)
 		-ldflags='-w -s $(BUILD_OVERRIDES)' \
 		-o $(BUILD_FOLDER)/audioinfo cmd/audioinfo/main.go
 
+test:
+	go test ./internal/... -cover -coverprofile=coverage.out
+	@echo "Tests complete"
+	go tool cover -html=coverage.out -o ./coverage.html
+	@echo "Coverage report written to coverage.html"
+
 build: $(TARGET)
 	@true
 
