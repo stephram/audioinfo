@@ -4,3 +4,5 @@ vendor
 main.exe
 bin
 
+*.json
+
