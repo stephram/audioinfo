@@ -4,5 +4,7 @@ vendor
 main.exe
 bin
 
+coverage*
+
 *.json
 

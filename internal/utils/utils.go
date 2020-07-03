@@ -19,24 +19,24 @@ func init() {
 	case "json":
 		setJSONLogFormat()
 	default:
-		log.Printf("unknown LOG_FORMAT value: '%s'", fmt)
+		// log.Printf("unknown LOG_FORMAT value: '%s'", fmt)
 		setJSONLogFormat()
 	}
 
 	level, err := log.ParseLevel(os.Getenv("LOG_LEVEL"))
 	if err != nil {
 		level = log.InfoLevel
-		log.WithError(err).Printf("defaulted to %s", level.String())
+		// log.WithError(err).Printf("defaulted to %s", level.String())
 	}
 	log.SetLevel(level)
-	log.Printf("log level set to %s", log.GetLevel().String())
+	// log.Printf("log level set to %s", log.GetLevel().String())
 }
 
 func setJSONLogFormat() {
 	log.SetFormatter(&log.JSONFormatter{
 		PrettyPrint: false,
 	})
-	log.Info("set JSON log format")
+	// log.Info("set JSON log format")
 }
 
 // GetLogger needs to be called once to ensure logrus is configured correctly.

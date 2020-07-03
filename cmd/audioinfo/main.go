@@ -55,7 +55,8 @@ var (
 )
 
 func init() {
-	utils.GetLogger().Infof("initialised logger")
+	// utils.GetLogger().Infof("initialised logger")
+	utils.GetLogger()
 }
 
 func main() {
