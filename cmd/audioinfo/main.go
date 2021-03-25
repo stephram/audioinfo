@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	_ "embed"
 	_ "net/http/pprof"
 
 	"github.com/stephram/audioinfo/pkg/app"
