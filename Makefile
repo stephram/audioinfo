@@ -97,6 +97,9 @@ runJSON:
 runTEXT:
 	@find $(HOME) -name [aA-zZ]*.wav -exec $(BUILD_FOLDER)/audioinfo -h -ofmt=text {} \;
 
+findWAV:
+	@find $(HOME) -name [aA-zZ]*.wav
+
 watch:
 	@yolo -i . -e vendor -e build -c $(run)
 
